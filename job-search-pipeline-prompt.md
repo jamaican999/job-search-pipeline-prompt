@@ -1,5 +1,5 @@
 # Job Search Pipeline: Operating Prompt for an AI Assistant
-> Version 2.0, 2026-09-26. A general-purpose prompt any job seeker can use with an AI agent (Claude Code, or any assistant that can read and write files).
+> Version 2.8, 2026-10-01. A general-purpose prompt any job seeker can use with an AI agent (Claude Code, or any assistant that can read and write files).
 >
 > **How to use it**
 > 1. Create an empty folder for your job search and save this file at its root as the assistant's instructions file (for Claude Code, `CLAUDE.md`; for many other agents, `AGENTS.md`).
@@ -75,6 +75,7 @@ location_rules:
   outside_that_area: <e.g., fully remote only>
 pay:
   floor: <number, or "none">
+  target_range: <e.g., 120000-160000, fuzzy +/-10%>  # for the optional practicality score
   policy: <e.g., "state the range as a fact; don't screen roles out on pay" or "flag roles below floor">
 tracks:                                       # §9; pick one per application
   - name: <e.g., Sales Operations>
@@ -90,8 +91,9 @@ display_preferences:
   gap_framing: <how to describe any employment gap, truthfully>
 cover_letter:
   standing_lines:                             # §11; appear early in every letter
-    - <e.g., a one-line motive: "I'm applying because this is work I do well...">
-    - <e.g., a one-line commitment: "My plan is to lean in, fit in, ramp fast, and stay for the long haul.">
+    - <e.g., a one-line motive: "I'm applying because I want to do similar work at a company <true trait>.">
+    - <e.g., a one-line commitment backed by past behavior: "As I did at <prior employer>, my plan is to lean in, fit in, ramp up, and stick around for the long haul.">
+  address_gaps_in: <interview (default) | cover_letter>   # §11
   sign_off: <e.g., "Warmly,">
   signature_image: resources/<signature file, optional>
 approval_words: [<e.g., "yes", "approved", "TU">]
@@ -197,7 +199,7 @@ JobSearchPipeline/
 Create the application folder and `00_posting.md` with the pasted text.
 
 ### Step 2. Verify the posting
-Confirm the posting is live on the employer's own careers site, not only on a job board, and record the exact title, req ID, location and remote terms, posting date, pay range, reporting line, and work authorization requirements. Job-board freshness labels are often wrong; closed postings frequently appear as recent. Methods are in Appendix C. If you can't verify, say so and label unverified details.
+Confirm the posting is live on the employer's own careers site, not only on a job board, and record the exact title, req ID, location and remote terms, posting date, pay range, reporting line, and work authorization requirements. Job-board freshness labels are often wrong; closed postings frequently appear as recent. Methods are in Appendix C. If you can't verify, say so and label unverified details. If a posting exists only on a job board such as LinkedIn and can't be found on the employer's own site, skip it by default and list it as unverified; job-board-only listings carry a high scam risk. In batch mode, never stop for a roadblock: record it in the batch summary and continue with the rest.
 
 ### Step 3. Screening checks (report; the candidate decides)
 - **Location** against §3's rules. Flag ambiguous remote terms, such as a remote role tagged to a single state.
@@ -215,6 +217,13 @@ Run every phrase you might quote through the **slogan clarity test**:
 3. **Directive versus delight.** The test matters most for directive language (missions, values, strategy), less for playful copy.
 
 A concrete fact or metric (a growth rate, a number of acquisitions, a customer-facing quality metric) usually makes a better hook than a slogan. Never tell a company its slogan is weak.
+
+Then run a **connection scan** between the company and the candidate's past employers:
+- **Corporate lineage:** spin-offs, mergers, and acquisitions that link them. For example, a company spun out of a former employer's parent shares its roots.
+- **Public business links:** partners, suppliers, or shared customers, only where public and not confidential.
+- **People:** former colleagues who now work there, as referral leads.
+
+When a real connection exists, give it one sentence in the letter, framed as shared roots rather than "I already know your culture," since cultures drift after a split. It supports the hook; it never replaces it. Note the connection in the hand-off message as a possible referral route. Never use confidential customer or competitor information.
 
 ### Step 5. Readiness Run 1 (base résumé)
 Run Appendix A with the track's base résumé and the posting. Adaptations:
@@ -240,7 +249,10 @@ Run Appendix A in full against the tailored résumé. Adaptations:
 ### Step 9. Pre-send review
 Reread both documents for:
 - **Structure:** sentences that start one way and end another, run-ons that lose their verb, clauses that change direction mid-thought. Writers tend not to see these in their own work.
-- **Convergence:** each paragraph does one job and answers this posting.
+- **Convergence:** each paragraph holds one idea and answers this posting. A sentence that belongs to the next paragraph's idea must move there, even if it's good.
+- **Tense:** consistent within each paragraph. Past tense for past work; present only for current facts.
+- **Length:** sentences as short and plain as people actually write. Cut drawn-out constructions.
+- **Logic:** every causal or "so" link must be literally true and stated, not implied. For example, don't place a company's market growth next to an AI claim in a way that suggests one causes the other.
 - **Accuracy:** every fact, number, and quote traces to the master file or cited research. Quotes must match the source exactly.
 - **Ownership:** "I," not "we," for the candidate's own work.
 - **Leftovers:** placeholder text, bracketed notes, trailing punctuation, known personal typos.
@@ -265,6 +277,16 @@ Write the hand-off message per §12.
 ---
 
 ## 8. Readiness scoring notes
+
+### Optional: practicality score
+Fit asks "can I win this job?" Practicality asks "do I want it on these terms?" Keep them separate and show both, for example in folder names as "<fit>-<practicality>". A simple version the candidate can tune in §3:
+- **Commute (40%):** remote = 100. Otherwise an index of one-way driving miles from home × office days per week × 0.25, with extra weight on long distances, mapped to bands that fall to 0. Use real driving distance to the actual office.
+- **Pay (35%):** the posted midpoint against the candidate's target range, with a fuzzy edge; no posted range scores neutral and is flagged.
+- **Level (25%):** same level or higher = 100, then lower for each step down.
+
+### Optional: language signals and an overall score
+Score warning signs in the posting's wording and structure as a small penalty (0 to 10): scope far beyond the level or pay, culture phrases that signal overwork or chaos, stale or evergreen postings, title and body mismatches, two roles blended into one, requirement stacking, friction between teams, and near-identical sibling postings. Credit candor (explicit success measures, honest constraints) against the penalty. Quote the evidence for every signal, and don't count anything another score already covers. Overall = round(√(fit × practicality)) − penalty; the geometric mean rewards jobs that are good on both counts. Sort batch summaries by overall and show every subscore.
+
 
 - The prompt in Appendix A scores fit from 0 to 100 against a threshold (default 75), with fixed weights: must-have coverage 30%, functional depth 30%, role and seniority alignment 20%, achievement quality 20%.
 - Run 1 shows how far the base résumé is from the posting. Run 2 shows what tailoring achieved. The gain should come from surfacing true facts, never from new claims; say so in Run 2's header.
@@ -312,7 +334,7 @@ Write the hand-off message per §12.
 ## 11. Cover letter rules
 
 ### The four-move structure
-1. **Credibility from the actual seat,** honestly scoped. Name the biggest gap plainly and reframe it as part of the pitch. For example, "I lived downstream of how that program was designed, so I know where it breaks."
+1. **Credibility from the actual seat,** honestly scoped. By default, don't volunteer gaps in the letter; leave them for the interview, where Run 2's gap-then-bridge answers handle them (§13). If the profile sets `address_gaps_in: cover_letter`, name the biggest gap plainly and reframe it as part of the pitch, for example "I lived downstream of how that program was designed, so I know where it breaks."
 2. **Two or three hyper-specific domain details** that only someone who did the work would know. Real failure modes and war stories beat generic competence claims.
 3. **The strongest two or three metrics,** delivered as outcomes of that expertise, not as a list.
 4. **A hard-won lesson that pivots to the candidate's point of view,** tied to the company's researched priorities. The final sentence looks forward.
@@ -326,8 +348,17 @@ Place the candidate's standing lines from §3 in or near the first paragraph of 
 - **Leadership-priority variant:** when the company's leaders have stated clear, researched priorities, the letter may lead with those priorities and use achievements as brief evidence.
 
 ### Always
-- Short, declarative sentences. No filler such as "I am excited to apply" or "I believe I would be a great fit."
+- One idea per paragraph. If the standing lines open the letter, make paragraph 1's idea "fit and intent" so they belong there rather than interrupt.
+- **Outward first:** open with the company, then connect the candidate to it.
+- **Don't self-grade:** avoid "work I do well" and similar self-praise. State what the candidate wants and what they did; let facts carry the praise.
+- **Back promises with past behavior:** anchor a commitment in a track record ("As I did at <prior employer>, my plan is to...") when it's true.
+- **Exact scope:** describe precisely what the candidate did ("supported compensation for sales teams"), even when a broader phrase sounds bigger.
+- **No repeats:** never repeat a number or phrase within a paragraph.
+- **No verb speed bumps:** keep paired verbs in the same mode. "Read the data the way the partner saw it" mixes reading with seeing; "the way the partner intended it" keeps both about meaning.
+- **Fewer, heavier sentences:** combine sentences that share a job; a long sentence followed by two short ones reads as settled.
+- Short, declarative sentences in a consistent tense. No filler such as "I am excited to apply" or "I believe I would be a great fit."
 - Nothing from `never_mention`, and no personal hardship.
+- **Endorsement placement:** if the letter quotes an endorsement, put it in the closing paragraph, followed by one line tying it to the new role and then the closing sentence. The endorsement is the last evidence the reader sees before the ask.
 - Sign-off from §3, then the signature image if provided, then the typed name.
 
 ### Short-answer "why this company" fields
@@ -348,7 +379,7 @@ End every application with a message that stands on its own:
 1. The outcome first: package built, where the Word files are, both scores.
 2. A small table: title and req ID, posting date, pay, location terms, Run 1 score, Run 2 score.
 3. Why it fits, in two or three bullets.
-4. The honest gaps and how the letter handles them.
+4. The honest gaps, and where interview prep handles them (or the letter, if the profile says so).
 5. **Items needing approval,** listed explicitly: new claims, motive or preference statements, unconfirmed facts. Never leave these only inside file notes.
 6. Timing, for example "apply within 48 hours; the posting is new."
 
